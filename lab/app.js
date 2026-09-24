@@ -26,5 +26,11 @@ $('sound-toggle').onclick=()=>{const bridge=$('game-frame')?.contentWindow.LabGa
 $('reload-game').onclick=()=>openGame(active,progress[active]?.chapter);
 document.querySelectorAll('.dialog-close').forEach(b=>b.onclick=()=>b.closest('dialog').close());
 function offlineReady(){$('offline-title').textContent='离线内容已就绪';$('offline-status').textContent='两个实验都已保存在此浏览器。出发前请在飞行模式下试开一次。';$('offline-progress').value=100}
-async function prepare(){if(!('serviceWorker' in navigator)){ $('offline-status').textContent='当前环境不支持离线缓存，请使用 Safari 的 HTTPS 网站。';return}try{navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='cache-progress'){$('offline-progress').value=e.data.value;$('offline-status').textContent=`正在准备两个实验… ${e.data.value}%`}if(e.data?.type==='cache-ready')offlineReady()});const reg=await navigator.serviceWorker.register('sw.js');const installing=reg.installing;if(installing)await new Promise((resolve,reject)=>{installing.addEventListener('statechange',()=>{if(installing.state==='activated')resolve();if(installing.state==='redundant')reject(new Error('cache-install-failed'))})});await navigator.serviceWorker.ready;if(!navigator.serviceWorker.controller)await new Promise(resolve=>navigator.serviceWorker.addEventListener('controllerchange',resolve,{once:true}));resourcesReady=true;offlineReady();route()}catch(e){$('offline-status').textContent='资源准备未完成，请确认已登录妙搭，联网后刷新重试。'}}
+async function prepare(){if(!('serviceWorker' in navigator)){ $('offline-status').textContent='当前环境不支持离线缓存，请使用 Safari 的 HTTPS 网站。';return}
+const sw=navigator.serviceWorker,wait=ms=>new Promise(r=>setTimeout(r,ms)),show=v=>{$('offline-progress').value=v;$('offline-status').textContent=`正在准备两个实验… ${v}%`};
+sw.addEventListener('message',e=>{if(e.data?.type==='cache-progress')show(e.data.value)});
+const ask=w=>new Promise(resolve=>{const ch=new MessageChannel(),t=setTimeout(()=>resolve(null),4000);ch.port1.onmessage=e=>{clearTimeout(t);resolve(e.data)};w.postMessage({type:'fill'},[ch.port2])});
+let reg=null;
+for(;;){try{if(!reg||!(reg.installing||reg.waiting||reg.active))reg=await sw.register('sw.js');const w=reg.installing||reg.waiting||reg.active,s=w&&await ask(w);if(s){show(s.value);if(s.ready&&reg.active&&sw.controller)break}}catch(e){$('offline-status').textContent='网络不稳定，正在自动重试…'}await wait(3000)}
+resourcesReady=true;offlineReady();route()}
 homeProgress();route();prepare();
