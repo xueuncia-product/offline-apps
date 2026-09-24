@@ -1,0 +1,15 @@
+'use strict';
+const sacredIcons={
+ compass:'<circle cx="32" cy="32" r="23"/><circle cx="32" cy="32" r="17"/><path d="m39 24-4 12-12 5 5-13Z M32 3v6m0 46v6M3 32h6m46 0h6"/>',
+ tower:'<path d="M18 53h28M23 53V23l9-12 9 12v30M21 23h22M27 34h10M30 53V42h4v11M32 4v7M13 28l-3 4 3 4 3-4Zm38-13-3 4 3 4 3-4Z"/>',
+ star:'<circle cx="32" cy="32" r="23"/><path d="m32 10 5 17 17 5-17 5-5 17-5-17-17-5 17-5Zm0-7v4m0 50v4M3 32h4m50 0h4"/>',
+ book:'<path d="M32 52c-7-6-14-7-23-5V14c9-2 16-1 23 5 7-6 14-7 23-5v33c-9-2-16-1-23 5Zm0-33v33M15 23l10 3m-10 4 10 3m-10 4 10 3m14-14 10-3m-10 10 10-3m-10 10 10-3"/>'
+};
+function sigil(type){return `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${sacredIcons[type]||sacredIcons.star}</svg>`;}
+function embers(){return `<div class="embers" aria-hidden="true">${Array.from({length:12},(_,i)=>`<i style="--x:${8+(i*19)%86}%;--delay:-${i*1.3}s;--duration:${7+i%5}s;--drift:${i%2?24:-24}px"></i>`).join('')}</div>`;}
+let effectsEnabled=true;try{effectsEnabled=localStorage.getItem('south-island-effects')!=='off';}catch{}
+function applyEffects(){document.documentElement.dataset.effects=effectsEnabled?'on':'off';const b=document.getElementById('effects-toggle');if(b){b.setAttribute('aria-pressed',String(effectsEnabled));b.textContent=effectsEnabled?'✧ 光效':'✧ 静谧';}}
+function revealRelic(name,note){const old=document.getElementById('relic-reveal');old?.remove();const dialog=document.createElement('dialog');dialog.id='relic-reveal';dialog.className='relic-dialog';dialog.setAttribute('aria-labelledby','relic-title');dialog.innerHTML=`<div class="relic-rays" aria-hidden="true"></div><span class="eyebrow">A DISCOVERY WORTH KEEPING</span><div class="relic-seal">${sigil('star')}</div><p class="relic-kicker">你发现了一件旅行信物</p><h2 id="relic-title">${esc(name)}</h2><p>${esc(note)}</p><button class="primary" data-relic-close>收入行囊 <span>✧</span></button>`;document.body.append(dialog);dialog.addEventListener('click',e=>{if(e.target===dialog||e.target.closest('[data-relic-close]'))dialog.close();});dialog.addEventListener('close',()=>{dialog.remove();document.querySelector('[data-action="exp-rest"]')?.focus({preventScroll:true});});dialog.showModal();}
+document.addEventListener('pointerdown',e=>{const button=e.target.closest('button');if(!button||button.disabled||!effectsEnabled||matchMedia('(prefers-reduced-motion: reduce)').matches)return;const r=button.getBoundingClientRect(),spark=document.createElement('span');spark.className='touch-spark';spark.style.left=e.clientX+'px';spark.style.top=e.clientY+'px';spark.setAttribute('aria-hidden','true');document.body.append(spark);spark.addEventListener('animationend',()=>spark.remove(),{once:true});setTimeout(()=>spark.remove(),1000);});
+document.addEventListener('click',e=>{if(e.target.closest('#effects-toggle')){effectsEnabled=!effectsEnabled;try{localStorage.setItem('south-island-effects',effectsEnabled?'on':'off');}catch{}applyEffects();}});
+applyEffects();

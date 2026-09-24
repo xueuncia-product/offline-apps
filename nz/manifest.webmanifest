@@ -1,0 +1,26 @@
+{
+  "id": "https://xueuncia-product.github.io/offline-apps/nz/",
+  "name": "飞往中土 · 南岛旅行闯关",
+  "short_name": "飞往中土",
+  "description": "南岛地图探险、分支剧情与旅行知识小游戏",
+  "lang": "zh-CN",
+  "start_url": "https://xueuncia-product.github.io/offline-apps/nz/",
+  "scope": "https://xueuncia-product.github.io/offline-apps/nz/",
+  "display": "standalone",
+  "background_color": "#0b1011",
+  "theme_color": "#0b1011",
+  "icons": [
+    {
+      "src": "img/1877092046856296.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "img/1877092050643059.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
