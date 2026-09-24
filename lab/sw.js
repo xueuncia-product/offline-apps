@@ -52,6 +52,6 @@ function fill(){
 }
 
 self.addEventListener('install',event=>event.waitUntil(Promise.race([fill(),sleep(20000)]).then(()=>self.skipWaiting())));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith(PREFIX)&&key!==CACHE)await caches.delete(key);await self.clients.claim();fill()})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith(PREFIX)&&key!==CACHE)await caches.delete(key);await (await caches.open(CACHE)).delete(new URL('app.js',self.registration.scope).href,{ignoreSearch:true});await self.clients.claim();fill()})()));
 self.addEventListener('message',event=>{if(event.data?.type!=='fill')return;event.waitUntil((async()=>{const s=await status();event.ports[0]?.postMessage(s);if(!s.ready)await fill()})())});
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;event.respondWith((async()=>{const cache=await caches.open(CACHE),url=new URL(event.request.url);if(url.pathname.endsWith('/'))url.pathname+='index.html';const saved=await cache.match(url.href,{ignoreSearch:true});return saved||fetch(event.request)})())});
