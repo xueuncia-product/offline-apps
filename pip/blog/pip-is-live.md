@@ -10,7 +10,7 @@ What we store, and what we do not, is in [Two devices, two chip counts](https://
 
 ## The short version
 
-Pip is single-player Texas Hold’em in the browser: real poker, against AI opponents with faces and personalities, at a table that doesn’t want anything from you. No accounts, no ads, no real money. It’s live at [playpip.io](https://playpip.io/offline-apps/pip), and the whole codebase is open source.
+Pip is single-player Texas Hold’em in the browser: real poker, against AI opponents with faces and personalities, at a table that doesn’t want anything from you. No accounts, no ads, no real money. It’s live at [playpip.io](https://playpip.io/offline-apps/pip/game), and the whole codebase is open source.
 
 ## Why it exists
 
